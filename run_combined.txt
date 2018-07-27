@@ -1,0 +1,31 @@
+% How to run combined rotations
+
+1. Download PDB file
+2. Open in matlab and save tempModel2 variable as a *.mat file
+3. Run find_interactions using the list of core or void residues 
+	-find_interactions(pdb,res_to_run,folder_name/, save_folder/)
+		pdb: 4 letter abbreviation of the pdb (XXXX)
+		res_to_run: list of core (or void) residue Ids
+		folder_name: folder containing XXXX.mat file
+		save_folder: folder to save the output file to
+	- this will produce two files:
+		XXXX_all_core_binned_2.mat: contains variable 'new_moving' Column 1 is the resID, column 2 is the group #
+		XXXX_all_paired_data_2.mat: contains variable 'paired' which is an NxN upper trianglar matrix containing 1s if the residues can interact
+4. Transfer XXXX.mat, XXXX_all_core_binned_2.mat and XXXX__all_paired_data_2.mat to the cluster
+5. on the cluster run set_up_recursive_run.m to create a tasklist for the residue and groups (will have to load matlab first)		
+	- set_up_recursive_run( pdb,folder_data, folder_code/,folder_pdb/)
+		pdb: 4 letter abbreviation of the pdb (XXXX)
+		folder_data/: folder containing XXXX_all_core_binned_2.mat
+		folder_code/: folder containing recursive code
+		folder_pdb: folder containing XXXX.mat file
+	- Creates run_XXXX_combined.sh file
+	- Also creates XXXX folder in folder_data to store files in 
+6. Compile recursive code
+	- g++ find_min_E.cxx E_recursive.cxx AminoAcid.cxx -o find_Min
+
+7. Submit run_XXXX_combined.sh to the cluster
+
+8. Final output will be sets of files (one for each ba/bl variant and for each group)
+	- XXXX_unique_dihedrals_fast2_*_g*.mat
+	- XXXX__Energy_fast2_*_g*.mat
+	these contain a list of all dihedral angles with the energy stored in the energy file
